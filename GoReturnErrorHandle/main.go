@@ -8,9 +8,11 @@ import (
 )
 
 func main() {
-	message, err := greetings.Hello("Jackson")
+	message, err := greetings.Hello("Win")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(message)
+
+	fmt.Print(message)
+
 }

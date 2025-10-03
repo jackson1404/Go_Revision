@@ -3,9 +3,16 @@ package main
 import (
 	"fmt"
 	"gomainapp/greetings"
+	"log"
 )
 
 func main() {
-	message := greetings.Hello("Jackson")
+	log.Printf("Reach %s", "here")
+	message, err := greetings.Hello("Jackson")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Println(message)
 }
