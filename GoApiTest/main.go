@@ -44,10 +44,42 @@ func addAlbum(c *gin.Context) {
 
 }
 
+func findAlbumById(c *gin.Context) {
+	id := c.Param("id")
+
+	for _, album := range albums {
+		if album.ID == id {
+			c.IndentedJSON(http.StatusOK, album)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
+func deleteById(c *gin.Context) {
+
+	id := c.Param("id")
+
+	for i, a := range albums {
+		if a.ID == id {
+			// Remove the album at index i
+			albums = append(albums[:i], albums[i+1:]...)
+
+			// Respond with success message
+			c.JSON(http.StatusOK, gin.H{"message": "album deleted"})
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"error": "album not found"})
+
+}
+
 func main() {
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.POST("/add-album", addAlbum)
+	router.GET("/findById/:id", findAlbumById)
+	router.DELETE("/deleteById/:id", deleteById)
 	router.Run("localhost:8080")
 }
 
