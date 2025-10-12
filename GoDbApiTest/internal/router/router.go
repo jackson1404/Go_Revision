@@ -20,6 +20,8 @@ func SetupRouter() *gin.Engine {
 	{
 		albumRoutes.GET("/getAll", handler.GetAlbums)
 		albumRoutes.POST("/addAlbum", handler.AddAlbum)
+		albumRoutes.PUT("/updateAlbum", handler.UpdateAlbum)
+		albumRoutes.DELETE("/deleteAlubum/:id", handler.DeleteAlbum)
 	}
 
 	return router

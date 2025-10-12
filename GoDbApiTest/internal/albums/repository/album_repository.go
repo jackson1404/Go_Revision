@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	albumModel "jackson.com/goApiDb/internal/albums/models"
 )
@@ -47,4 +48,47 @@ func (r *AlbumRepository) InsertAlbum(a albumModel.Album) (int, error) {
 		return 0, err
 	}
 	return a.AlbumID, nil
+}
+
+func (r *AlbumRepository) UpdateAlbum(a albumModel.Album) error {
+	// Step 1: Check existence
+	var exists bool
+	// EXISTS keyword checks whether the inner query returns at least one row.
+	err := r.DB.QueryRow("SELECT EXISTS (SELECT 1 FROM tbl_albums WHERE album_id = $1)", a.AlbumID).Scan(&exists)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("album with id %d not found", a.AlbumID)
+	}
+
+	// Step 2: Perform update
+	stmt := `
+        UPDATE tbl_albums
+        SET title = $1, artist = $2, price = $3
+        WHERE album_id = $4
+    `
+	_, err = r.DB.Exec(stmt, a.Title, a.Artist, a.Price, a.AlbumID)
+	return err
+}
+
+// Delete an album by ID
+func (r *AlbumRepository) DeleteAlbum(id int) error {
+	stmt := `DELETE FROM tbl_albums WHERE album_id = $1`
+	result, err := r.DB.Exec(stmt, id)
+
+	if err != nil {
+		return err
+	}
+
+	rowAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowAffected == 0 {
+		return fmt.Errorf("album with id %d not found", id)
+	}
+
+	return nil
 }
